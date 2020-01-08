@@ -29,7 +29,7 @@ public class LibraryUser {
     public int getUserId() { return userId; }
     public LocalDate getRegDate() { return regDate; }
     public String getName() { return name; }
-    public void setName(String newName) { this.name = name; }
+    public void setName(String name) { this.name = name; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
