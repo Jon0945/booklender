@@ -78,4 +78,50 @@ public class LoanTest {
         assertEquals(testLoan2,testLoan);
         assertEquals(testLoan2.hashCode(),testLoan.hashCode());
     }
+
+    @Test
+    public void testIsOverdue_Valid_Overdue_Date() {
+        //Arrange
+        testLoan.getBook().setMaxLoanDays(0);
+
+        //Assert
+        assertTrue(testLoan.isOverdue());
+    }
+
+    @Test
+    public void testIsOverdue_Invalid_Overdue_Date() {
+        assertFalse(testLoan.isOverdue());
+    }
+
+    @Test
+    public void testGetFine() {
+        //Arrange
+        testLoan.getBook().setMaxLoanDays(0);
+        BigDecimal expectedFine = BigDecimal.valueOf(5);
+
+        //Act
+        BigDecimal actualFine = testLoan.getFine();
+
+        //Assert
+        assertEquals(expectedFine,actualFine);
+    }
+
+    @Test
+    public void testExtendLoan_Book_Is_Reserved() {
+        //Arrange
+        testLoan.getBook().setReserved(true);
+
+        //Assert
+        assertFalse(testLoan.extendLoan(10));
+    }
+
+    @Test
+    public void testExtendLoan_Book_Is_Not_Reserved() {
+        //Arrange
+        LocalDate expectedLoanDate = LocalDate.parse("2020-01-18");
+
+        //Assert
+        assertTrue(testLoan.extendLoan(10));
+        assertEquals(expectedLoanDate, testLoan.getLoanDate());
+    }
 }

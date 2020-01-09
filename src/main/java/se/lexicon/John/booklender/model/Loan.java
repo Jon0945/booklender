@@ -1,13 +1,27 @@
 package se.lexicon.John.booklender.model;
 
+import org.apache.tomcat.jni.Local;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
+@Entity
 public class Loan {
     //Fields
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long loanId;
+    @ManyToOne (
+            fetch = FetchType.EAGER )
+    @JoinColumn(name = "user_id")
     private LibraryUser loanTaker;
+    @ManyToOne (
+            fetch = FetchType.EAGER )
+    @JoinColumn(name = "book_id")
     private Book book;
     private LocalDate loanDate;
     private boolean terminated;
@@ -33,12 +47,10 @@ public class Loan {
     public void setLoanTaker(LibraryUser loanTaker) { this.loanTaker = loanTaker; }
     public Book getBook() { return book; }
     public void setBook(Book book) { this.book = book; }
-    //public boolean isOverdue() {}
-    //public BigDecimal getFine() {}
     public LocalDate getLoanDate() { return loanDate; }
     public boolean isTerminated() { return terminated; }
     public void setTerminated(boolean terminated) { this.terminated = terminated; }
-    //private boolean extendLoan(int days) {}
+
 
     @Override
     public boolean equals(Object o) {
@@ -67,4 +79,25 @@ public class Loan {
                 ", terminated=" + terminated +
                 '}';
     }
+
+    public boolean isOverdue() {
+        return LocalDate.now().isAfter(this.loanDate.plusDays(this.book.getMaxLoanDays()));
+    }
+
+    public BigDecimal getFine() {
+        return BigDecimal.valueOf(book.getFinePerDay().longValue() *
+                DAYS.between(this.loanDate.plusDays(this.book.getMaxLoanDays()),
+                        LocalDate.now()));
+    }
+
+    protected boolean extendLoan(int days) {
+        if(!book.isReserved()  ) {
+            this.loanDate = this.getLoanDate().plusDays(days);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 }

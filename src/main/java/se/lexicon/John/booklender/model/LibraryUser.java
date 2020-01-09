@@ -1,13 +1,19 @@
 package se.lexicon.John.booklender.model;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
 public class LibraryUser {
     //Fields
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
     private LocalDate regDate;
     private String name;
+
+    @Column(unique = true)
     private String email;
 
     //Constructor 1
